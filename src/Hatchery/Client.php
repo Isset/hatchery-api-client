@@ -2,6 +2,7 @@
 
 namespace Hatchery;
 
+use Exception;
 use Hatchery\Connection\Curl\CurlPost;
 use Hatchery\Payload\JobAdd;
 use Hatchery\Payload\JobStatus;
@@ -23,7 +24,7 @@ class Client
 
         $tokenCacheLocation = rtrim($tokenCacheLocation, '/') . '/';
         if (!is_writable($tokenCacheLocation)) {
-            throw new \Exception('token cache location isn\'t writable: ' . $tokenCacheLocation);
+            throw new Exception('token cache location isn\'t writable: ' . $tokenCacheLocation);
         }
 
         $this->tokenPath = $tokenCacheLocation . $consumerKey . '-token';
@@ -35,7 +36,7 @@ class Client
 
     public function createJobAddPayload($preset, $uriInput, $uriOutput)
     {
-        return new JobAdd($this->baseLink . '/api/v2/jobs/', $preset, $uriInput, $uriOutput);
+        return new JobAdd($this->baseLink . '/api/jobs/', $preset, $uriInput, $uriOutput);
     }
 
     public function createJobStatusPayload($identifier)
@@ -46,7 +47,12 @@ class Client
     public function sendPayload(Payload $payload, $addHeader = true)
     {
         if ($addHeader) {
-            $payload->setHeader('x-auth-token', $this->getToken());
+            try {
+                $payload->setHeader('x-auth-token', $this->getToken());
+            } catch (Exception $ex) {
+                $ex = new Connection\ResponseException('Unable to acquire login token.');
+                throw $ex;
+            }
         }
         $payload->setHeader('Content-Type', 'application/json');
         /* @var $response \Hatchery\Connection\ResponseInterface */
@@ -61,13 +67,17 @@ class Client
                     unlink($this->tokenPath);
                 }
                 $this->token = false;
+
+                $ex = new Connection\ResponseException(sprintf('[%s]: Unable to process request: [%s]', $response->getStatusCode(), $response->getContent()));
+                $ex->setResponse($response);
+                throw $ex;
             } else {
 
-                $ex = new Connection\ResponseException(sprintf('[%s]: Send failed: [%s]', $response->getStatusCode(), $response->getContent()));
+                $ex = new Connection\ResponseException(sprintf('[%s]: Unexpected response: [%s]', $response->getStatusCode(), $response->getContent()));
                 $ex->setResponse($response);
                 throw $ex;
             }
-        } catch (\Exception $ex) {
+        } catch (Exception $ex) {
             $ex = new Connection\ResponseException($ex->getMessage());
             $ex->setResponse($response);
             throw $ex;
