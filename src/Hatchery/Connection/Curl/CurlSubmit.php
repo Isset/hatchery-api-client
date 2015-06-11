@@ -5,7 +5,12 @@ namespace Hatchery\Connection\Curl;
 use Hatchery\Connection\TypeInterface;
 use Hatchery\Payload\Payload;
 
-class CurlPost implements TypeInterface
+/**
+ * Class CurlSubmit
+ * @package Hatchery\Connection\Curl
+ * @author Bart Malestein <bart@isset.nl>
+ */
+class CurlSubmit implements TypeInterface
 {
 
     public function sendPayload(Payload $payload)

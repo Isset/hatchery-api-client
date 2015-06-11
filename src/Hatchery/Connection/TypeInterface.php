@@ -8,4 +8,5 @@ interface TypeInterface
 {
 
     public function sendPayload(Payload $payload);
+
 }

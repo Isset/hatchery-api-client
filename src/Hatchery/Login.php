@@ -9,7 +9,8 @@ use Hatchery\Payload\Payload;
  * @package Hatchery
  * @author Bart Malestein <bart@isset.nl>
  */
-class Login extends Payload{
+class Login extends Payload
+{
 
     private $consumerKey;
     private $privateKey;
