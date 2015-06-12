@@ -22,6 +22,9 @@ use PHPUnit_Framework_TestCase;
 class JobTest extends PHPUnit_Framework_TestCase
 {
 
+    /**
+     *
+     */
     public function testBasicJob()
     {
         $job = new Job();
@@ -46,6 +49,9 @@ class JobTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('ftp://domain.ftp.com/output/test/adjusted_filename.mp4', $result['outputs'][0]['url']);
     }
 
+    /**
+     * @throws \Hatchery\Builder\Exception\JobBuilderException
+     */
     public function testSegmentedJob()
     {
         $job = new Job();
