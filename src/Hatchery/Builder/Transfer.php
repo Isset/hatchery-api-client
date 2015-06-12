@@ -12,7 +12,7 @@ class Transfer extends Source
      * @param Source $source
      * @param Url $url
      */
-    function __construct(Source $source, Url $url)
+    public function __construct(Source $source, Url $url)
     {
         parent::__construct();
         $this->source = $source;

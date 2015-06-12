@@ -15,9 +15,9 @@ class Caption implements ParsableInterface
     /**
      * @var Url
      */
-    private $url;
+    protected $url;
 
-    function __construct(Url $url)
+    public function __construct(Url $url)
     {
 
         $this->url = $url;

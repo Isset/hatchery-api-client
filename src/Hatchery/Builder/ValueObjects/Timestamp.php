@@ -9,19 +9,19 @@ use Hatchery\Builder\ParsableInterface;
  * @package Hatchery\Builder\ValueObjects
  * @author Bart Malestein <bart@isset.nl>
  */
-class Timestamp implements ParsableInterface
+class Timestamp implements ValueObjectInterface
 {
 
     /**
      * @var string
      */
-    private $value;
+    protected $value;
 
     /**
      * @param $timestamp
      * @throws \Hatchery\Builder\Exception\JobBuilderException
      */
-    function __construct($timestamp)
+    public function __construct($timestamp)
     {
         if (preg_match('/^([0-9]{1,3}:)?[0-5][0-9]:[0-5][0-9](\.[0-9]{1,3})?$/', $timestamp, $matches) === 1) {
         } else if (preg_match('/((^100)|(^[0-9]{1,2}))\%$/', $timestamp, $matches) === 1) {
@@ -37,7 +37,7 @@ class Timestamp implements ParsableInterface
     /**
      * @return string
      */
-    public function parse()
+    public function getValue()
     {
         return $this->value;
     }

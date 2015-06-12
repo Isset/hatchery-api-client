@@ -4,6 +4,7 @@ namespace Hatchery\Builder;
 
 use Hatchery\Builder\Exception\JobBuilderException;
 use Hatchery\Builder\Url\Url;
+use Hatchery\Builder\ValueObjects\Number;
 use Hatchery\Builder\ValueObjects\Timestamp;
 
 /**
@@ -17,42 +18,43 @@ class Stills implements ParsableInterface
     /**
      * @var Url
      */
-    private $url;
+    protected $url;
 
     /**
-     * @var int
+     * @var \Hatchery\Builder\ValueObjects\Number
      */
-    private $width;
+    protected $width;
 
     /**
-     * @var int
+     * @var \Hatchery\Builder\ValueObjects\Number
      */
-    private $height;
+    protected $height;
 
     /**
-     * @var int
+     * @var \Hatchery\Builder\ValueObjects\Number
      */
-    private $amount;
+    protected $amount;
 
     /**
      * @var Timestamp[]
      */
-    private $timestamps;
+    protected $timestamps;
 
     /**
      * @var string
      */
-    private $format;
+    protected $format;
 
     /**
      * @param Url $url
      */
-    function __construct(Url $url)
+    public function __construct(Url $url)
     {
         $this->url = $url;
         $this->timestamps = [];
         $this->width = null;
         $this->height = null;
+        $this->amount = null;
         $this->format = null;
     }
 
@@ -65,52 +67,32 @@ class Stills implements ParsableInterface
     }
 
     /**
-     * @param string|int $width
-     * @throws JobBuilderException
+     * @param \Hatchery\Builder\ValueObjects\Number $width
      */
-    public function setWidth($width)
+    public function setWidth(Number $width)
     {
-        $width = intval($width);
-
-        if (!is_numeric($width)) {
-            throw new JobBuilderException('Stills width should be numeric');
-        }
-
         $this->width = $width;
     }
 
     /**
-     * @param string|int $height
-     * @throws JobBuilderException
+     * @param \Hatchery\Builder\ValueObjects\Number $height
      */
-    public function setHeight($height)
+    public function setHeight(Number $height)
     {
-        $height = intval($height);
-
-        if (!is_numeric($height)) {
-            throw new JobBuilderException('Stills height should be numeric');
-        }
-
         $this->height = $height;
     }
 
     /**
-     * @param string|int $amount
+     * @param \Hatchery\Builder\ValueObjects\Number $amount
      * @throws JobBuilderException
      */
-    public function setAmount($amount)
+    public function setAmount(Number $amount)
     {
         if (count($this->timestamps) > 0) {
             throw new JobBuilderException('Cannot use amount in stills when using timestamps');
         }
 
-        $amount = intval($amount);
-
-        if (!is_numeric($amount)) {
-            throw new JobBuilderException('Stills amount should be numeric');
-        }
-
-        $this->amount = $amount;
+       $this->amount = $amount;
     }
 
     /**
@@ -144,13 +126,13 @@ class Stills implements ParsableInterface
         $data['base_url'] = $this->url->parseBaseUrl();
 
         if ($this->width !== null) {
-            $data['width'] = $this->width;
+            $data['width'] = $this->width->getValue();
         }
         if ($this->height !== null) {
-            $data['height'] = $this->height;
+            $data['height'] = $this->height->getValue();
         }
         if ($this->amount !== null) {
-            $data['amount'] = $this->amount;
+            $data['amount'] = $this->amount->getValue();
         }
         if ($this->format !== null) {
             $data['format'] = $this->format;
@@ -158,7 +140,7 @@ class Stills implements ParsableInterface
 
         foreach ($this->timestamps as $timestamp) {
 
-            $data['timestamps'][] = $timestamp->parse();
+            $data['timestamps'][] = $timestamp->getValue();
         }
 
 

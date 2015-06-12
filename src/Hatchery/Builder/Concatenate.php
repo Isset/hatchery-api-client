@@ -2,8 +2,8 @@
 
 namespace Hatchery\Builder;
 
-use Hatchery\Builder\Exception\JobBuilderException;
 use Hatchery\Builder\Url\Url;
+use Hatchery\Builder\ValueObjects\Number;
 use Hatchery\Builder\ValueObjects\Timestamp;
 
 /**
@@ -29,37 +29,37 @@ class Concatenate extends Source
     protected $deinterlace;
 
     /**
-     * @var int
+     * @var \Hatchery\Builder\ValueObjects\Number
      */
-    private $width;
+    protected $width;
 
     /**
-     * @var int
+     * @var \Hatchery\Builder\ValueObjects\Number
      */
-    private $height;
+    protected $height;
 
     /**
-     * @var int
+     * @var \Hatchery\Builder\ValueObjects\Number
      */
-    private $outputLength;
+    protected $outputLength;
 
     /**
      * @var Timestamp
      */
-    private $offset;
+    protected $offset;
 
 
     /**
      * @param Url $url
      */
-    function __construct(Url $url)
+    public function __construct(Url $url)
     {
         parent::__construct();
         $this->sources = [];
         $this->url = $url;
         $this->width = null;
         $this->height = null;
-        $this->deinterlace = null;
+        $this->deinterlace = false;
         $this->preset = null;
         $this->outputLength = null;
         $this->offset = null;
@@ -82,47 +82,26 @@ class Concatenate extends Source
     }
 
     /**
-     * @param string|int $width
-     * @throws JobBuilderException
+     * @param \Hatchery\Builder\ValueObjects\Number $width
      */
-    public function setWidth($width)
+    public function setWidth(Number $width)
     {
-        $width = intval($width);
-
-        if (!is_numeric($width)) {
-            throw new JobBuilderException('Concatenate width should be numeric');
-        }
-
         $this->width = $width;
     }
 
     /**
-     * @param string|int $height
-     * @throws JobBuilderException
+     * @param \Hatchery\Builder\ValueObjects\Number $height
      */
-    public function setHeight($height)
+    public function setHeight(Number $height)
     {
-        $height = intval($height);
-
-        if (!is_numeric($height)) {
-            throw new JobBuilderException('Concatenate height should be numeric');
-        }
-
         $this->height = $height;
     }
 
     /**
-     * @param string|int $outputLength
-     * @throws JobBuilderException
+     * @param \Hatchery\Builder\ValueObjects\Number $outputLength
      */
-    public function setOutputLength($outputLength)
+    public function setOutputLength(Number $outputLength)
     {
-        $outputLength = intval($outputLength);
-
-        if (!is_numeric($outputLength)) {
-            throw new JobBuilderException('Concatenate outputLength should be numeric');
-        }
-
         $this->outputLength = $outputLength;
     }
 
@@ -163,19 +142,19 @@ class Concatenate extends Source
         }
 
         if ($this->width !== null) {
-            $data['width'] = $this->width;
+            $data['width'] = $this->width->getValue();
         }
         if ($this->height !== null) {
-            $data['height'] = $this->height;
+            $data['height'] = $this->height->getValue();
         }
         if ($this->outputLength !== null) {
-            $data['output_length'] = $this->outputLength;
+            $data['output_length'] = $this->outputLength->getValue();
         }
         if($this->offset !== null) {
-            $data['seek_offset'] = $this->offset->parse();
+            $data['seek_offset'] = $this->offset->getValue();
         }
         if($this->offset !== null) {
-            $data['seek_offset'] = $this->offset->parse();
+            $data['seek_offset'] = $this->offset->getValue();
         }
         if ($this->deinterlace === true) {
             $data['deinterlace'] = true;

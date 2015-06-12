@@ -16,12 +16,12 @@ class Input extends Source
     /**
      * @var Url
      */
-    private $url;
+    protected $url;
 
     /**
      * @param Url $url
      */
-    function __construct(Url $url)
+    public function __construct(Url $url)
     {
         parent::__construct();
 

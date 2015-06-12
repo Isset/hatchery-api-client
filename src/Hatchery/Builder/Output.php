@@ -2,8 +2,8 @@
 
 namespace Hatchery\Builder;
 
-use Hatchery\Builder\Exception\JobBuilderException;
 use Hatchery\Builder\Url\Url;
+use Hatchery\Builder\ValueObjects\Number;
 use Hatchery\Builder\ValueObjects\Timestamp;
 
 /**
@@ -40,10 +40,46 @@ class Output extends Source
     protected $caption;
 
     /**
+     * @var string
+     */
+    protected $preset;
+
+    /**
+     * @var boolean
+     */
+    protected $deinterlace;
+
+    /**
+     * @var \Hatchery\Builder\ValueObjects\Number
+     */
+    protected $width;
+
+    /**
+     * @var \Hatchery\Builder\ValueObjects\Number
+     */
+    protected $height;
+
+    /**
+     * @var \Hatchery\Builder\ValueObjects\Number
+     */
+    protected $outputLength;
+
+    /**
+     * @var Timestamp
+     */
+    protected $offset;
+
+    /**
+     * @var string
+     */
+    protected $type;
+
+
+    /**
      * @param Source $source
      * @param Url $url
      */
-    function __construct(Source $source, Url $url)
+    public function __construct(Source $source, Url $url)
     {
         parent::__construct();
         $this->source = $source;
@@ -55,7 +91,6 @@ class Output extends Source
         $this->preset = null;
         $this->outputLength = null;
         $this->offset = null;
-
         $this->type = null;
 
         $this->caption = null;
@@ -63,12 +98,13 @@ class Output extends Source
         $this->watermarks = [];
     }
 
-
+    /**
+     *
+     */
     public function setDeinterlaced()
     {
         $this->deinterlace = true;
     }
-
 
     /**
      *
@@ -94,51 +130,6 @@ class Output extends Source
         $this->url->modifyFilename($filename);
     }
 
-
-    /**
-     * @param string|int $width
-     * @throws JobBuilderException
-     */
-    public function setWidth($width)
-    {
-        $width = intval($width);
-
-        if (!is_numeric($width)) {
-            throw new JobBuilderException('Output width should be numeric');
-        }
-
-        $this->width = $width;
-    }
-
-    /**
-     * @param string|int $height
-     * @throws JobBuilderException
-     */
-    public function setHeight($height)
-    {
-        $height = intval($height);
-
-        if (!is_numeric($height)) {
-            throw new JobBuilderException('Output height should be numeric');
-        }
-
-        $this->height = $height;
-    }
-
-    /**
-     * @param string|int $outputLength
-     * @throws JobBuilderException
-     */
-    public function setOutputLength($outputLength)
-    {
-        $outputLength = intval($outputLength);
-
-        if (!is_numeric($outputLength)) {
-            throw new JobBuilderException('Output outputLength should be numeric');
-        }
-
-        $this->outputLength = $outputLength;
-    }
 
     /**
      * @param string $preset
@@ -182,6 +173,30 @@ class Output extends Source
     }
 
     /**
+     * @param \Hatchery\Builder\ValueObjects\Number $width
+     */
+    public function setWidth(Number $width)
+    {
+        $this->width = $width;
+    }
+
+    /**
+     * @param \Hatchery\Builder\ValueObjects\Number $height
+     */
+    public function setHeight(Number $height)
+    {
+        $this->height = $height;
+    }
+
+    /**
+     * @param \Hatchery\Builder\ValueObjects\Number $outputLength
+     */
+    public function setOutputLength(Number $outputLength)
+    {
+        $this->outputLength = $outputLength;
+    }
+
+    /**
      * @return array
      */
     public function parse()
@@ -192,16 +207,16 @@ class Output extends Source
         $data['url'] = $this->url->parseUrl();
 
         if ($this->width !== null) {
-            $data['width'] = $this->width;
+            $data['width'] = $this->width->getValue();
         }
         if ($this->height !== null) {
-            $data['height'] = $this->height;
+            $data['height'] = $this->height->getValue();
         }
         if ($this->outputLength !== null) {
-            $data['output_length'] = $this->outputLength;
+            $data['output_length'] = $this->outputLength->getValue();
         }
         if($this->offset !== null) {
-            $data['seek_offset'] = $this->offset->parse();
+            $data['seek_offset'] = $this->offset->getValue();
         }
         if ($this->deinterlace === true) {
             $data['deinterlace'] = true;

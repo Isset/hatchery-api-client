@@ -4,7 +4,7 @@ namespace Hatchery;
 
 use Exception;
 use Hatchery\Builder\Job;
-use Hatchery\Connection\Curl\CurlSubmit;
+use Hatchery\Connection\ConnectionInterface;
 use Hatchery\Payload\JobAdd;
 use Hatchery\Payload\JobPayload;
 use Hatchery\Payload\JobStatus;
@@ -19,18 +19,23 @@ class Client
 {
 
     private $baseLink;
+
     private $interface;
+
     private $token = false;
+
+
     private $loginPayload;
 
     /**
+     * @param ConnectionInterface $connectionInterface
      * @param $api
      * @param $consumerKey
      * @param $privateKey
      * @param bool $tokenCacheLocation
      * @throws Exception
      */
-    public function __construct($api, $consumerKey, $privateKey, $tokenCacheLocation = false)
+    public function __construct(ConnectionInterface $connectionInterface, $api, $consumerKey, $privateKey, $tokenCacheLocation = false)
     {
         if (!$tokenCacheLocation) {
             $tokenCacheLocation = __DIR__ . '/../Cache/';
@@ -44,7 +49,8 @@ class Client
         $this->tokenPath = $tokenCacheLocation . $consumerKey . '-token';
         $this->baseLink = rtrim($api, '/');
 
-        $this->interface = new CurlSubmit();
+
+        $this->interface = $connectionInterface;
         $this->loginPayload = new Login($this->baseLink . '/api/login', $consumerKey, $privateKey);
     }
 
@@ -84,34 +90,7 @@ class Client
             throw $ex;
         }
         $payload->setHeader('Content-Type', 'application/json');
-
-        /* @var $response \Hatchery\Connection\ResponseInterface */
-        $response = $this->interface->sendPayload($payload);
-        try {
-
-            if ($response->getStatusCode() >= 200 && $response->getStatusCode() < 300) {
-
-                return $response;
-            } else if ($response->getStatusCode() == 401 || $response->getStatusCode() == 403) {
-                if (file_exists($this->tokenPath)) {
-                    unlink($this->tokenPath);
-                }
-                $this->token = false;
-
-                $ex = new Connection\ResponseException(sprintf('[%s]: Unable to process request: [%s]', $response->getStatusCode(), $response->getContent()));
-                $ex->setResponse($response);
-                throw $ex;
-            } else {
-
-                $ex = new Connection\ResponseException(sprintf('[%s]: Unexpected response: [%s]', $response->getStatusCode(), $response->getContent()));
-                $ex->setResponse($response);
-                throw $ex;
-            }
-        } catch (Exception $ex) {
-            $ex = new Connection\ResponseException($ex->getMessage());
-            $ex->setResponse($response);
-            throw $ex;
-        }
+        return $this->handlePayload($payload);
     }
 
     /**
@@ -131,6 +110,15 @@ class Client
             }
         }
         $payload->setHeader('Content-Type', 'application/json');
+        return $this->handlePayload($payload);
+    }
+
+    /**
+     * @param Payload $payload
+     * @return Connection\ResponseInterface
+     * @throws Connection\ResponseException
+     */
+    private function handlePayload(Payload $payload){
         /* @var $response \Hatchery\Connection\ResponseInterface */
         $response = $this->interface->sendPayload($payload);
         try {

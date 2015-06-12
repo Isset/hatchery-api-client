@@ -26,7 +26,7 @@ class Playlist extends Source{
     /**
      * @param Url $url
      */
-    function __construct(Url $url)
+    public function __construct(Url $url)
     {
         parent::__construct();
         $this->url = $url;
@@ -45,9 +45,10 @@ class Playlist extends Source{
      * @param Output $output
      * @throws JobBuilderException
      */
-    public function addSegmentedOutput(Output $output){
+    public function addSegmentedOutput(Output $output)
+    {
 
-        if(!$output->isSegmented()){
+        if (false === $output->isSegmented()) {
 
             throw new JobBuilderException('Segmented output expected in playlist');
         }

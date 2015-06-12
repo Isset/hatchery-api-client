@@ -2,7 +2,7 @@
 
 namespace Hatchery\Connection\Curl;
 
-use Hatchery\Connection\TypeInterface;
+use Hatchery\Connection\ConnectionInterface;
 use Hatchery\Payload\Payload;
 
 /**
@@ -10,7 +10,7 @@ use Hatchery\Payload\Payload;
  * @package Hatchery\Connection\Curl
  * @author Bart Malestein <bart@isset.nl>
  */
-class CurlSubmit implements TypeInterface
+class CurlSubmit implements ConnectionInterface
 {
 
     public function sendPayload(Payload $payload)

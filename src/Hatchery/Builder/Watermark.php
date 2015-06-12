@@ -2,8 +2,8 @@
 
 namespace Hatchery\Builder;
 
-use Hatchery\Builder\Exception\JobBuilderException;
 use Hatchery\Builder\Url\Url;
+use Hatchery\Builder\ValueObjects\Number;
 
 /**
  * Class Watermark
@@ -15,22 +15,22 @@ class Watermark implements ParsableInterface
     /**
      * @var Url
      */
-    private $url;
+    protected $url;
 
     /**
-     * @var int
+     * @var \Hatchery\Builder\ValueObjects\Number
      */
-    private $width;
+    protected $width;
 
     /**
-     * @var int
+     * @var \Hatchery\Builder\ValueObjects\Number
      */
-    private $height;
+    protected $height;
 
     /**
      * @param Url $url
      */
-    function __construct(Url $url)
+    public function __construct(Url $url)
     {
         $this->url = $url;
         $this->width = null;
@@ -38,34 +38,21 @@ class Watermark implements ParsableInterface
     }
 
     /**
-     * @param string|int $width
-     * @throws JobBuilderException
+     * @param \Hatchery\Builder\ValueObjects\Number $width
      */
-    public function setWidth($width)
+    public function setWidth(Number $width)
     {
-        $width = intval($width);
-
-        if (!is_numeric($width)) {
-            throw new JobBuilderException('Watermark width should be numeric');
-        }
-
         $this->width = $width;
     }
 
     /**
-     * @param string|int $height
-     * @throws JobBuilderException
+     * @param \Hatchery\Builder\ValueObjects\Number $height
      */
-    public function setHeight($height)
+    public function setHeight(Number $height)
     {
-        $height = intval($height);
-
-        if (!is_numeric($height)) {
-            throw new JobBuilderException('Watermark height should be numeric');
-        }
-
         $this->height = $height;
     }
+
 
 
     /**
@@ -77,10 +64,10 @@ class Watermark implements ParsableInterface
         $data['url'] = $this->url->parseUrl();
 
         if ($this->width !== null) {
-            $data['width'] = $this->width;
+            $data['width'] = $this->width->getValue();
         }
         if ($this->height !== null) {
-            $data['height'] = $this->height;
+            $data['height'] = $this->height->getValue();
         }
 
         return $data;

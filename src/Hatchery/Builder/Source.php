@@ -11,7 +11,7 @@ abstract class Source implements ParsableInterface{
 
     protected $reference;
 
-    function __construct()
+    public function __construct()
     {
         $this->reference = uniqid('source_');
     }
