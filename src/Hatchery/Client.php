@@ -9,6 +9,7 @@ use Hatchery\Payload\JobAdd;
 use Hatchery\Payload\JobPayload;
 use Hatchery\Payload\JobStatus;
 use Hatchery\Payload\Payload;
+use Hatchery\Payload\RawPayload;
 
 /**
  * Class Client
@@ -83,6 +84,23 @@ class Client
     public function submitJob(Job $job)
     {
         $payload = new JobPayload($this->baseLink . '/api/jobs/', $job);
+        try {
+            $payload->setHeader('x-auth-token', $this->getToken());
+        } catch (Exception $ex) {
+            $ex = new Connection\ResponseException('Unable to acquire login token: ' . $ex->getMessage());
+            throw $ex;
+        }
+        $payload->setHeader('Content-Type', 'application/json');
+        return $this->handlePayload($payload);
+    }
+
+    /**
+     * @param $data
+     * @return Connection\ResponseInterface
+     * @throws Connection\ResponseException
+     */
+    public function submitRawJob(array $data){
+        $payload = new RawPayload($this->baseLink . '/api/jobs/', $data);
         try {
             $payload->setHeader('x-auth-token', $this->getToken());
         } catch (Exception $ex) {
