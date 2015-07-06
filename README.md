@@ -8,6 +8,8 @@ Example
 The API requires a consumer and private key which can be requested at info@my.videotranscoder.io. 
 The client will store the API token in the 'token_cache_location', so make sure this directory exists and is writable. 
 
+```php
+
     <?php
 
     include '../src/Hatchery/Autoloader.php';
@@ -30,7 +32,7 @@ The client will store the API token in the 'token_cache_location', so make sure 
     $output->setOutputLength(new Hatchery\Builder\ValueObjects\Number(60));
     
     //example of creating stills
-    $stills = new Stills(new new Hatchery\Builder\Url\Url('ftp://my_ftp_out_location.com/folder/my_stills_folder/''));
+    $stills = new Stills(new Hatchery\Builder\Url\Url('ftp://my_ftp_out_location.com/folder/my_stills_folder/'));
     $stills->setFilename('my_stills_frame_{{number}}');
     $stills->setAmount(new Hatchery\Builder\ValueObjects\Number(5));
 
@@ -46,3 +48,4 @@ The client will store the API token in the 'token_cache_location', so make sure 
     
     //retrieve polling location (containing job id)
     $location = $response->getLocation();
+```
