@@ -11,7 +11,6 @@ use Hatchery\Builder\Url\Url;
  */
 class Caption implements ParsableInterface
 {
-
     /**
      * @var Url
      */
@@ -19,7 +18,6 @@ class Caption implements ParsableInterface
 
     public function __construct(Url $url)
     {
-
         $this->url = $url;
     }
 

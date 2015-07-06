@@ -4,7 +4,6 @@ namespace Hatchery\Connection;
 
 class ResponseException extends \Exception
 {
-
     protected $response;
 
     public function setResponse(ResponseInterface $response)
@@ -16,6 +15,4 @@ class ResponseException extends \Exception
     {
         return $this->response;
     }
-
 }
-

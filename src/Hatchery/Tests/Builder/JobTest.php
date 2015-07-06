@@ -21,7 +21,6 @@ use PHPUnit_Framework_TestCase;
  */
 class JobTest extends PHPUnit_Framework_TestCase
 {
-
     /**
      *
      */
@@ -75,7 +74,6 @@ class JobTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($result['outputs'][0]['reference'], $result['outputs'][1]['streams'][0]);
 
         $this->assertEquals('playlist', $result['outputs'][1]['type']);
-
     }
 
     /**
@@ -146,5 +144,4 @@ class JobTest extends PHPUnit_Framework_TestCase
 
         $this->assertEquals($result['outputs'][0]['watermarks'][0]['url'], 'ftp://domain.ftp.com/input/watermark/watermark.png');
     }
-
 }

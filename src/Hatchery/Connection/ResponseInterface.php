@@ -4,7 +4,6 @@ namespace Hatchery\Connection;
 
 interface ResponseInterface
 {
-
     public function setStatusCode($statusCode);
 
     public function setContent($content);

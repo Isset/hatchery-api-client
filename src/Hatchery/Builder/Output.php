@@ -13,7 +13,6 @@ use Hatchery\Builder\ValueObjects\Timestamp;
  */
 class Output extends Source
 {
-
     /**
      * @var Source
      */
@@ -167,8 +166,8 @@ class Output extends Source
     /**
      * @param Caption $caption
      */
-    public function setCaption(Caption $caption){
-
+    public function setCaption(Caption $caption)
+    {
         $this->caption = $caption;
     }
 
@@ -215,13 +214,13 @@ class Output extends Source
         if ($this->outputLength !== null) {
             $data['output_length'] = $this->outputLength->getValue();
         }
-        if($this->offset !== null) {
+        if ($this->offset !== null) {
             $data['seek_offset'] = $this->offset->getValue();
         }
         if ($this->deinterlace === true) {
             $data['deinterlace'] = true;
         }
-        if($this->preset !== null) {
+        if ($this->preset !== null) {
             $data['preset'] = $this->preset;
         }
         if ($this->type !== null) {
@@ -238,6 +237,5 @@ class Output extends Source
         }
 
         return $data;
-
     }
 }

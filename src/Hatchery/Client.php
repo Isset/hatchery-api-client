@@ -18,7 +18,6 @@ use Hatchery\Payload\RawPayload;
  */
 class Client
 {
-
     private $baseLink;
 
     private $interface;
@@ -99,7 +98,8 @@ class Client
      * @return Connection\ResponseInterface
      * @throws Connection\ResponseException
      */
-    public function submitRawJob(array $data){
+    public function submitRawJob(array $data)
+    {
         $payload = new RawPayload($this->baseLink . '/api/jobs/', $data);
         try {
             $payload->setHeader('x-auth-token', $this->getToken());
@@ -136,15 +136,14 @@ class Client
      * @return Connection\ResponseInterface
      * @throws Connection\ResponseException
      */
-    private function handlePayload(Payload $payload){
+    private function handlePayload(Payload $payload)
+    {
         /* @var $response \Hatchery\Connection\ResponseInterface */
         $response = $this->interface->sendPayload($payload);
         try {
-
             if ($response->getStatusCode() >= 200 && $response->getStatusCode() < 300) {
-
                 return $response;
-            } else if ($response->getStatusCode() == 401 || $response->getStatusCode() == 403) {
+            } elseif ($response->getStatusCode() == 401 || $response->getStatusCode() == 403) {
                 if (file_exists($this->tokenPath)) {
                     unlink($this->tokenPath);
                 }
@@ -154,7 +153,6 @@ class Client
                 $ex->setResponse($response);
                 throw $ex;
             } else {
-
                 $ex = new Connection\ResponseException(sprintf('[%s]: Unexpected response: [%s]', $response->getStatusCode(), $response->getContent()));
                 $ex->setResponse($response);
                 throw $ex;
@@ -185,5 +183,4 @@ class Client
         file_put_contents($this->tokenPath, $response['token']);
         return $response['token'];
     }
-
 }

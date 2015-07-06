@@ -11,7 +11,6 @@ use Hatchery\Payload\Payload;
  */
 class Login extends Payload
 {
-
     private $consumerKey;
     private $privateKey;
 
@@ -30,5 +29,4 @@ class Login extends Payload
         $this->setPostData('hash', crypt($time . '' . $this->privateKey . '' . $this->consumerKey, '$6$rounds=9001$' . $this->consumerKey . '$'));
         return parent::getPostData();
     }
-
 }

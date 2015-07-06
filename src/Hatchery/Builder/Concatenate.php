@@ -150,16 +150,16 @@ class Concatenate extends Source
         if ($this->outputLength !== null) {
             $data['output_length'] = $this->outputLength->getValue();
         }
-        if($this->offset !== null) {
+        if ($this->offset !== null) {
             $data['seek_offset'] = $this->offset->getValue();
         }
-        if($this->offset !== null) {
+        if ($this->offset !== null) {
             $data['seek_offset'] = $this->offset->getValue();
         }
         if ($this->deinterlace === true) {
             $data['deinterlace'] = true;
         }
-        if($this->preset !== null) {
+        if ($this->preset !== null) {
             $data['preset'] = $this->preset;
         }
 
@@ -167,6 +167,4 @@ class Concatenate extends Source
 
         return $data;
     }
-
-
 }

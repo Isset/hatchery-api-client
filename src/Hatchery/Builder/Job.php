@@ -7,8 +7,8 @@ namespace Hatchery\Builder;
  * @package Hatchery\Builder
  * @author Bart Malestein <bart@isset.nl>
  */
-class Job implements ParsableInterface{
-
+class Job implements ParsableInterface
+{
     /**
      * @var Source[]
      */
@@ -24,15 +24,11 @@ class Job implements ParsableInterface{
      */
     public function add(Source $source)
     {
-
-        if($source instanceof Input){
-
+        if ($source instanceof Input) {
             $this->inputs[] = $source;
-        }else{
-
+        } else {
             $this->outputs[] = $source;
         }
-
     }
 
 

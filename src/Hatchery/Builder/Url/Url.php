@@ -3,6 +3,7 @@
 namespace Hatchery\Builder\Url;
 
 use Hatchery\Builder\Exception\InvalidUrlException;
+
 /**
  * Class Url
  *
@@ -11,7 +12,6 @@ use Hatchery\Builder\Exception\InvalidUrlException;
  */
 class Url
 {
-
     const SCHEME = PHP_URL_SCHEME;
     const HOST = PHP_URL_HOST;
     const PORT = PHP_URL_PORT;
@@ -108,7 +108,7 @@ class Url
 
         if ($pathWithRetardedSlash === '/') {
             $this->path = '';
-        } else if ($pathWithRetardedSlash{0} === '/') {
+        } elseif ($pathWithRetardedSlash{0} === '/') {
             $this->path = substr($pathWithRetardedSlash, 1);
         } else {
             $this->path = $pathWithRetardedSlash; // Apparently not
@@ -127,7 +127,6 @@ class Url
                 list($key, $value) = explode('=', $keyValuePair, 2);
 
                 $this->addQueryParameter($key, $value);
-
             }
         }
 
@@ -198,9 +197,10 @@ class Url
             Url::FRAGMENT
         ],
         $urlEncode = false
-    )
-    {
-        if (count($parts) === 0) return '';
+    ) {
+        if (count($parts) === 0) {
+            return '';
+        }
 
         $buf = '';
 
@@ -229,7 +229,6 @@ class Url
         }
 
         if ($this->path !== null && in_array(Url::PATH, $parts)) {
-
             $urlParts = explode('/', $this->path);
 
             if ($urlEncode === true) {
@@ -250,7 +249,6 @@ class Url
             if (count($keyValuePairStrings) > 0) {
                 $buf .= '?' . implode('&', $keyValuePairStrings);
             }
-
         }
 
         if ($this->fragment !== null && in_array(Url::FRAGMENT, $parts)) {
@@ -276,7 +274,9 @@ class Url
      */
     public function getFilename($includeExtension = true)
     {
-        if ($this->path === null) return null;
+        if ($this->path === null) {
+            return null;
+        }
 
         // If the given path is a directory return an empty string
         if ($this->isDir() === true) {
@@ -359,7 +359,6 @@ class Url
      */
     public function getPath($options = [])
     {
-
         if (in_array(self::LTRIM_PATH, $options)) {
             return ltrim($this->path, '/');
         }
@@ -442,7 +441,7 @@ class Url
     {
         if ($this->isDir()) {
             return $this->path;
-        } else if (strrpos($this->path, '/') === false) {
+        } elseif (strrpos($this->path, '/') === false) {
             return '';
         } else {
             return substr($this->path, 0, strrpos($this->path, '/') + 1);
@@ -499,7 +498,8 @@ class Url
      */
     public function isAbsolutePath()
     {
-        return $this->path{0} === '/';
+        return $this->path{0}
+        === '/';
     }
 
     /**
@@ -507,6 +507,7 @@ class Url
      */
     public function isRelativePath()
     {
-        return $this->path{0} !== '/';
+        return $this->path{0}
+        !== '/';
     }
 }

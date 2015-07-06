@@ -6,7 +6,6 @@ use Hatchery\Connection\ResponseInterface;
 
 class CurlResponse implements ResponseInterface
 {
-
     private $content;
     private $headers;
     private $statusCode;
@@ -16,7 +15,7 @@ class CurlResponse implements ResponseInterface
         $this->statusCode = $statusCode;
         $this->headers    = $headers;
         $this->content    = $content;
-    }  
+    }
 
     public function getContent()
     {
@@ -43,28 +42,25 @@ class CurlResponse implements ResponseInterface
         return json_decode($this->content, true);
     }
 
-    public function getLocation() {
-
+    public function getLocation()
+    {
         return $this->getHeaderByName('Location');
     }
 
-    public function getHeaderByName($name) {
+    public function getHeaderByName($name)
+    {
         $headers = explode("\n", $this->headers);
         
         foreach ($headers as $header) {
-            
             if (empty($header)) {
-                
                 continue;
             }
             $keyVal = explode(": ", $header);
             if ($keyVal[0] === $name) {
-                
                 return trim($keyVal[1], " \t\n\r\0\x0B");
             }
         }
         
         return false;
     }
-
 }

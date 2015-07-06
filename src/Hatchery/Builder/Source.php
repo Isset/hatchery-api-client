@@ -7,8 +7,8 @@ namespace Hatchery\Builder;
  * @package Hatchery\Builder
  * @author Bart Malestein <bart@isset.nl>
  */
-abstract class Source implements ParsableInterface{
-
+abstract class Source implements ParsableInterface
+{
     protected $reference;
 
     public function __construct()
@@ -23,7 +23,4 @@ abstract class Source implements ParsableInterface{
     {
         return $this->reference;
     }
-
-
-
 }

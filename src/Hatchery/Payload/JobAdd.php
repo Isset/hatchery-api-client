@@ -4,7 +4,6 @@ namespace Hatchery\Payload;
 
 class JobAdd extends Payload
 {
-
     public function __construct($url, $preset, $inputLocation, $outputLocation)
     {
         parent::__construct($url);
@@ -84,5 +83,4 @@ class JobAdd extends Payload
 
         $this->data['output']['stills'] = $stills;
     }
-
 }

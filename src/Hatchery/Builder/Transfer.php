@@ -2,12 +2,10 @@
 
 namespace Hatchery\Builder;
 
-
 use Hatchery\Builder\Url\Url;
 
 class Transfer extends Source
 {
-
     /**
      * @param Source $source
      * @param Url $url
@@ -32,7 +30,6 @@ class Transfer extends Source
      */
     public function parse()
     {
-
         return [
             'type' => 'transfer-only',
             'source' => $this->source->getReference(),

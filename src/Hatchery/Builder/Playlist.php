@@ -2,7 +2,6 @@
 
 namespace Hatchery\Builder;
 
-
 use Hatchery\Builder\Exception\JobBuilderException;
 use Hatchery\Builder\Url\Url;
 
@@ -11,8 +10,8 @@ use Hatchery\Builder\Url\Url;
  * @package Hatchery\Builder
  * @author Bart Malestein <bart@isset.nl>
  */
-class Playlist extends Source{
-
+class Playlist extends Source
+{
     /**
      * @var Url
      */
@@ -47,9 +46,7 @@ class Playlist extends Source{
      */
     public function addSegmentedOutput(Output $output)
     {
-
         if (false === $output->isSegmented()) {
-
             throw new JobBuilderException('Segmented output expected in playlist');
         }
 

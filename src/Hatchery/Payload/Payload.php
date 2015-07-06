@@ -4,7 +4,6 @@ namespace Hatchery\Payload;
 
 class Payload
 {
-
     protected $data = array();
     protected $headers = array();
     protected $url;
@@ -50,14 +49,12 @@ class Payload
 
     public function setMethod($method)
     {
-
         $this->method = $method;
         return $this;
     }
 
     public function getMethod()
     {
-
         return $this->method;
     }
 }

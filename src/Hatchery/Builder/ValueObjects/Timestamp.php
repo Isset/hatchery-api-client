@@ -1,6 +1,7 @@
 <?php
 
 namespace Hatchery\Builder\ValueObjects;
+
 use Hatchery\Builder\Exception\JobBuilderException;
 use Hatchery\Builder\ParsableInterface;
 
@@ -11,7 +12,6 @@ use Hatchery\Builder\ParsableInterface;
  */
 class Timestamp implements ValueObjectInterface
 {
-
     /**
      * @var string
      */
@@ -24,8 +24,8 @@ class Timestamp implements ValueObjectInterface
     public function __construct($timestamp)
     {
         if (preg_match('/^([0-9]{1,3}:)?[0-5][0-9]:[0-5][0-9](\.[0-9]{1,3})?$/', $timestamp, $matches) === 1) {
-        } else if (preg_match('/((^100)|(^[0-9]{1,2}))\%$/', $timestamp, $matches) === 1) {
-        } else if (preg_match('/^([0-9]*)$/', $timestamp, $matches) === 1) {
+        } elseif (preg_match('/((^100)|(^[0-9]{1,2}))\%$/', $timestamp, $matches) === 1) {
+        } elseif (preg_match('/^([0-9]*)$/', $timestamp, $matches) === 1) {
         } else {
             throw new JobBuilderException('Invalid still timestamp: ' . $timestamp);
         }

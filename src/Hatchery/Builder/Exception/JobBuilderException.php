@@ -9,7 +9,8 @@ use Exception;
  * @package Hatchery\Builder\Exception
  * @author Bart Malestein <bart@isset.nl>
  */
-class JobBuilderException extends Exception{
+class JobBuilderException extends Exception
+{
     /**
      * @param string $message
      */

@@ -1,6 +1,7 @@
 <?php
 
 namespace Hatchery\Builder\ValueObjects;
+
 use Hatchery\Builder\Exception\JobBuilderException;
 
 /**
@@ -8,9 +9,8 @@ use Hatchery\Builder\Exception\JobBuilderException;
  * @package Hatchery\Builder\ValueObjects
  * @author Bart Malestein <bart@isset.nl>
  */
-class Number implements ValueObjectInterface {
-
-
+class Number implements ValueObjectInterface
+{
     protected $value;
 
     /**
@@ -19,13 +19,11 @@ class Number implements ValueObjectInterface {
      */
     public function __construct($number)
     {
-
         if (false === is_numeric($number)) {
             throw new JobBuilderException('Number value must be numeric');
         }
 
         $this->value = intval($number);
-
     }
 
     /**

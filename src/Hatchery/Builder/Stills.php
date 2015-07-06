@@ -14,7 +14,6 @@ use Hatchery\Builder\ValueObjects\Timestamp;
  */
 class Stills implements ParsableInterface
 {
-
     /**
      * @var Url
      */
@@ -92,14 +91,15 @@ class Stills implements ParsableInterface
             throw new JobBuilderException('Cannot use amount in stills when using timestamps');
         }
 
-       $this->amount = $amount;
+        $this->amount = $amount;
     }
 
     /**
      * @param Timestamp $timestamp
      * @throws JobBuilderException
      */
-    public function addTimestamp(Timestamp $timestamp){
+    public function addTimestamp(Timestamp $timestamp)
+    {
         if ($this->amount !== null) {
             throw new JobBuilderException('Cannot use timestamp in stills when using amount');
         }
@@ -139,12 +139,10 @@ class Stills implements ParsableInterface
         }
 
         foreach ($this->timestamps as $timestamp) {
-
             $data['timestamps'][] = $timestamp->getValue();
         }
 
 
         return $data;
-
     }
 }

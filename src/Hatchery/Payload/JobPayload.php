@@ -11,7 +11,6 @@ use Hatchery\Builder\Job;
  */
 class JobPayload extends Payload
 {
-
     /**
      * @param $url
      * @param Job $job

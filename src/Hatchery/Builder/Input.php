@@ -4,7 +4,6 @@ namespace Hatchery\Builder;
 
 use Hatchery\Builder\Url\Url;
 
-
 /**
  * Class Input
  * @package Hatchery\Builder
@@ -12,7 +11,6 @@ use Hatchery\Builder\Url\Url;
  */
 class Input extends Source
 {
-
     /**
      * @var Url
      */

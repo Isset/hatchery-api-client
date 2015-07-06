@@ -12,16 +12,15 @@ use Hatchery\Payload\Payload;
  */
 class CurlSubmit implements ConnectionInterface
 {
-
     public function sendPayload(Payload $payload)
     {
         $ch = curl_init($payload->getUrl());
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
-        curl_setopt($ch, CURLOPT_HEADER, 1); 
+        curl_setopt($ch, CURLOPT_HEADER, 1);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 
         if ($payload->getMethod() === 'post') {
-            curl_setopt($ch, CURLOPT_POST, 1);            
+            curl_setopt($ch, CURLOPT_POST, 1);
             curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload->getPostData()));
         }
 
@@ -42,6 +41,4 @@ class CurlSubmit implements ConnectionInterface
         
         return new CurlResponse(curl_getinfo($ch, CURLINFO_HTTP_CODE), $retHeaders, $body);
     }
-
-
 }
