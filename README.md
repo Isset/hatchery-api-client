@@ -5,15 +5,14 @@ This is the API client for http://my.videotranscoder.io/ API. Use this to simpli
 Example
 =======
 
-The API requires a consumer and private key which can be requested at info@my.videotranscoder.io. 
-The client will store the API token in the 'token_cache_location', so make sure this directory exists and is writable. 
+The API requires an authentication token which can be requested at info@my.videotranscoder.io. 
 
 ```php
 
     <?php
 
     include '../src/Hatchery/Autoloader.php';
-    $client  = new Hatchery\Client('api_url', 'api_consumer_key', 'api_private_key', 'token_cache_location');
+    $client  = new Hatchery\Client('api_url', 'api_token');
     
     //create a new job, this class will contain all inputs and outputs
     $job = new Hatchery\Builder\Job();

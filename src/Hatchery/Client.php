@@ -10,6 +10,7 @@ use Hatchery\Payload\JobPayload;
 use Hatchery\Payload\JobStatus;
 use Hatchery\Payload\Payload;
 use Hatchery\Payload\RawPayload;
+use Hatchery\Connection\Curl\CurlSubmit;
 
 /**
  * Class Client
@@ -24,34 +25,19 @@ class Client
 
     private $token = false;
 
-
-    private $loginPayload;
-
     /**
-     * @param ConnectionInterface $connectionInterface
      * @param $api
-     * @param $consumerKey
-     * @param $privateKey
-     * @param bool $tokenCacheLocation
-     * @throws Exception
+     * @param $token
+     * @param ConnectionInterface $connectionInterface
      */
-    public function __construct(ConnectionInterface $connectionInterface, $api, $consumerKey, $privateKey, $tokenCacheLocation = false)
+    public function __construct($api, $token, ConnectionInterface $connectionInterface = null)
     {
-        if (!$tokenCacheLocation) {
-            $tokenCacheLocation = __DIR__ . '/../Cache/';
-        }
-
-        $tokenCacheLocation = rtrim($tokenCacheLocation, '/') . '/';
-        if (!is_writable($tokenCacheLocation)) {
-            throw new Exception('token cache location isn\'t writable: ' . $tokenCacheLocation);
-        }
-
-        $this->tokenPath = $tokenCacheLocation . $consumerKey . '-token';
+        $this->token = $token;
         $this->baseLink = rtrim($api, '/');
 
-
-        $this->interface = $connectionInterface;
-        $this->loginPayload = new Login($this->baseLink . '/api/login', $consumerKey, $privateKey);
+        if ($connectionInterface === null) {
+            $this->interface = new CurlSubmit();
+        }
     }
 
     /**
@@ -143,10 +129,7 @@ class Client
         try {
             if ($response->getStatusCode() >= 200 && $response->getStatusCode() < 300) {
                 return $response;
-            } elseif ($response->getStatusCode() == 401 || $response->getStatusCode() == 403) {
-                if (file_exists($this->tokenPath)) {
-                    unlink($this->tokenPath);
-                }
+            } else if ($response->getStatusCode() == 401 || $response->getStatusCode() == 403) {
                 $this->token = false;
 
                 $ex = new Connection\ResponseException(sprintf('[%s]: Unable to process request: [%s]', $response->getStatusCode(), $response->getContent()));
@@ -165,22 +148,33 @@ class Client
     }
 
     /**
-     * @return bool|string
-     * @throws Connection\ResponseException
+     * @return bool
+     * @throws Exception
      */
     public function getToken()
     {
         if ($this->token) {
             return $this->token;
+        } else {
+            throw new Exception("No token available");
         }
-        if (file_exists($this->tokenPath)) {
-            return file_get_contents($this->tokenPath);
-        }
-        $data = $this->sendPayload($this->loginPayload, false);
-        $response = $data->getJsonResponse();
+    }
 
-        $this->token = $response['token'];
-        file_put_contents($this->tokenPath, $response['token']);
-        return $response['token'];
+    /**
+     * @param $location
+     * @return Connection\ResponseInterface
+     * @throws Connection\ResponseException
+     */
+    public function getStatus($location)
+    {
+        $payload = new JobStatus($this->baseLink, $location);
+        try {
+            $payload->setHeader('x-auth-token', $this->getToken());
+        } catch (Exception $ex) {
+            $ex = new Connection\ResponseException('Unable to acquire login token: ' . $ex->getMessage());
+            throw $ex;
+        }
+        $payload->setHeader('Content-Type', 'application/json');
+        return $this->handlePayload($payload);
     }
 }
