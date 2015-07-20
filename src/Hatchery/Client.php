@@ -27,17 +27,38 @@ class Client
 
     /**
      * @param $api
-     * @param $token
+     * @param null $consumerKey
+     * @param null $privateKey
+     * @param bool $tokenCacheLocation
      * @param ConnectionInterface $connectionInterface
+     * @throws Exception
      */
-    public function __construct($api, $token, ConnectionInterface $connectionInterface = null)
+    public function __construct($api, $consumerKey = null, $privateKey = null, $tokenCacheLocation = false, ConnectionInterface $connectionInterface = null)
     {
-        $this->token = $token;
+        if (!$tokenCacheLocation) {
+            $tokenCacheLocation = __DIR__ . '/../Cache/';
+        }
+        $tokenCacheLocation = rtrim($tokenCacheLocation, '/') . '/';
+        if (!is_writable($tokenCacheLocation)) {
+            throw new Exception('token cache location isn\'t writable: ' . $tokenCacheLocation);
+        }
+
+        $this->tokenPath = $tokenCacheLocation . $consumerKey . '-token';
+
         $this->baseLink = rtrim($api, '/');
+        $this->loginPayload = new Login($this->baseLink . '/api/login', $consumerKey, $privateKey);
 
         if ($connectionInterface === null) {
             $this->interface = new CurlSubmit();
         }
+    }
+
+    /**
+     * @param $token
+     */
+    public function setToken($token)
+    {
+        $this->token = $token;
     }
 
     /**
@@ -154,11 +175,22 @@ class Client
     public function getToken()
     {
         if ($this->token) {
+
             return $this->token;
+        } else if (file_exists($this->tokenPath)) {
+
+            return file_get_contents($this->tokenPath);
         } else {
-            throw new Exception("No token available");
+            $data = $this->sendPayload($this->loginPayload, false);
+            $response = $data->getJsonResponse();
+
+            $this->token = $response['token'];
+            file_put_contents($this->tokenPath, $response['token']);
+
+            return $response['token'];
         }
     }
+
 
     /**
      * @param $location

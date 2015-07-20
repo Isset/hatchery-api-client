@@ -5,14 +5,14 @@ This is the API client for http://my.videotranscoder.io/ API. Use this to simpli
 Example
 =======
 
-The API requires an authentication token which can be requested at info@my.videotranscoder.io. 
+The API requires an consumer and private key which can be requested at info@my.videotranscoder.io. 
 
 ```php
 
     <?php
 
     include '../src/Hatchery/Autoloader.php';
-    $client  = new Hatchery\Client('api_url', 'api_token');
+    $client  = new Hatchery\Client('api_url', 'consumer_key', 'private_key');
     
     //create a new job, this class will contain all inputs and outputs
     $job = new Hatchery\Builder\Job();
@@ -31,7 +31,7 @@ The API requires an authentication token which can be requested at info@my.video
     $output->setOutputLength(new Hatchery\Builder\ValueObjects\Number(60));
     
     //example of creating stills
-    $stills = new Stills(new Hatchery\Builder\Url\Url('ftp://my_ftp_out_location.com/folder/my_stills_folder/'));
+    $stills = new Hatchery\Builder\Stills(new Hatchery\Builder\Url\Url('ftp://my_ftp_out_location.com/folder/my_stills_folder/'));
     $stills->setFilename('my_stills_frame_{{number}}');
     $stills->setAmount(new Hatchery\Builder\ValueObjects\Number(5));
 
