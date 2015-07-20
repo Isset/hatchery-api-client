@@ -35,14 +35,11 @@ class Client
      * @param AuthenticationInterface $authenticationInterface
      * @param ConnectionInterface $connectionInterface
      * @throws Exception
-     * @internal param null $consumerKey
-     * @internal param null $privateKey
-     * @internal param bool $tokenCacheLocation
      */
     public function __construct($api, AuthenticationInterface $authenticationInterface, ConnectionInterface $connectionInterface = null)
     {
         $this->baseLink = rtrim($api, '/');
-        $this->$authentication = $authenticationInterface;
+        $this->authentication = $authenticationInterface;
 
         if ($connectionInterface === null) {
             $this->interface = new CurlSubmit();
