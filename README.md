@@ -12,7 +12,9 @@ The API requires an consumer and private key which can be requested at info@my.v
     <?php
 
     include '../src/Hatchery/Autoloader.php';
-    $client  = new Hatchery\Client('api_url', 'consumer_key', 'private_key');
+    
+    $authentication = new Hatchery\Authentication\KeyPairAuthentication('consumer_key', 'private_key');
+    $client  = new Hatchery\Client('api_url', $authentication);
     
     //create a new job, this class will contain all inputs and outputs
     $job = new Hatchery\Builder\Job();

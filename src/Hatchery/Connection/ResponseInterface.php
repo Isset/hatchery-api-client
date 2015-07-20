@@ -15,4 +15,6 @@ interface ResponseInterface
     public function getJsonResponse();
     
     public function getLocation();
+
+    public function getHeaderByName($name);
 }

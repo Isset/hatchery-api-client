@@ -3,6 +3,9 @@
 namespace Hatchery;
 
 use Exception;
+use Hatchery\Authentication\AuthenticationInterface;
+use Hatchery\Authentication\KeyPairAuthentication;
+use Hatchery\Authentication\TokenAuthentication;
 use Hatchery\Builder\Job;
 use Hatchery\Connection\ConnectionInterface;
 use Hatchery\Payload\JobAdd;
@@ -25,28 +28,21 @@ class Client
 
     private $token = false;
 
+    private $authentication;
+
     /**
      * @param $api
-     * @param null $consumerKey
-     * @param null $privateKey
-     * @param bool $tokenCacheLocation
+     * @param AuthenticationInterface $authenticationInterface
      * @param ConnectionInterface $connectionInterface
      * @throws Exception
+     * @internal param null $consumerKey
+     * @internal param null $privateKey
+     * @internal param bool $tokenCacheLocation
      */
-    public function __construct($api, $consumerKey = null, $privateKey = null, $tokenCacheLocation = false, ConnectionInterface $connectionInterface = null)
+    public function __construct($api, AuthenticationInterface $authenticationInterface, ConnectionInterface $connectionInterface = null)
     {
-        if (!$tokenCacheLocation) {
-            $tokenCacheLocation = __DIR__ . '/../Cache/';
-        }
-        $tokenCacheLocation = rtrim($tokenCacheLocation, '/') . '/';
-        if (!is_writable($tokenCacheLocation)) {
-            throw new Exception('token cache location isn\'t writable: ' . $tokenCacheLocation);
-        }
-
-        $this->tokenPath = $tokenCacheLocation . $consumerKey . '-token';
-
         $this->baseLink = rtrim($api, '/');
-        $this->loginPayload = new Login($this->baseLink . '/api/login', $consumerKey, $privateKey);
+        $this->$authentication = $authenticationInterface;
 
         if ($connectionInterface === null) {
             $this->interface = new CurlSubmit();
@@ -174,20 +170,30 @@ class Client
      */
     public function getToken()
     {
-        if ($this->token) {
+        if ($this->authentication instanceof TokenAuthentication) {
 
-            return $this->token;
-        } else if (file_exists($this->tokenPath)) {
+            return $this->authentication->getToken();
 
-            return file_get_contents($this->tokenPath);
-        } else {
-            $data = $this->sendPayload($this->loginPayload, false);
-            $response = $data->getJsonResponse();
+        } else if ($this->authentication instanceof KeyPairAuthentication) {
+            if ($this->token) {
 
-            $this->token = $response['token'];
-            file_put_contents($this->tokenPath, $response['token']);
+                return $this->token;
+            } else if (file_exists($this->authentication->getTokenPath())) {
 
-            return $response['token'];
+                return file_get_contents($this->authentication->getTokenPath());
+            } else {
+                $loginPayload = new Login($this->baseLink . '/api/login', $this->authentication->getConsumerKey(), $this->authentication->getPrivateKey());
+
+                $data = $this->sendPayload($loginPayload, false);
+                $response = $data->getJsonResponse();
+
+                $this->token = $response['token'];
+                file_put_contents($this->authentication->getTokenPath(), $response['token']);
+
+                return $response['token'];
+            }
+        }else{
+            throw new Exception('Unable to retrieve token');
         }
     }
 
