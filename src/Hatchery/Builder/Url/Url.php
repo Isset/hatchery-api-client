@@ -275,7 +275,7 @@ class Url
     public function getFilename($includeExtension = true)
     {
         if ($this->path === null) {
-            return null;
+            return '';
         }
 
         // If the given path is a directory return an empty string

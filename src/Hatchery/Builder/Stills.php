@@ -124,7 +124,9 @@ class Stills implements ParsableInterface
     {
         $data = [];
         $data['base_url'] = $this->url->parseBaseUrl();
-
+        if ($this->url->getFilename() !== '') {
+            $data['filename'] = $this->url->getFilename();
+        }
         if ($this->width !== null) {
             $data['width'] = $this->width->getValue();
         }
