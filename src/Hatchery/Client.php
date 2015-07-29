@@ -135,12 +135,16 @@ class Client
      * @param Payload $payload
      * @return Connection\ResponseInterface
      * @throws Connection\ResponseException
+     * @throws Connection\StrictWarningException
+     * @throws Exception
      */
     private function handlePayload(Payload $payload)
     {
         /* @var $response \Hatchery\Connection\ResponseInterface */
         $response = $this->interface->sendPayload($payload);
         try {
+            $data = json_decode($response->getContent(), true);
+
             if ($response->getStatusCode() >= 200 && $response->getStatusCode() < 300) {
                 return $response;
             } else if ($response->getStatusCode() == 401 || $response->getStatusCode() == 403) {
@@ -149,11 +153,18 @@ class Client
                 $ex = new Connection\ResponseException(sprintf('[%s]: Unable to process request: [%s]', $response->getStatusCode(), $response->getContent()));
                 $ex->setResponse($response);
                 throw $ex;
+            } else if ($response->getStatusCode() == 400 && isset($data['error']) && isset($data['warnings'])) {
+
+                $ex = new Connection\StrictWarningException($data['error']);
+                $ex->setWarnings($data['warnings']);
+                throw $ex;
             } else {
                 $ex = new Connection\ResponseException(sprintf('[%s]: Unexpected response: [%s]', $response->getStatusCode(), $response->getContent()));
                 $ex->setResponse($response);
                 throw $ex;
             }
+        } catch (Connection\StrictWarningException $ex) {
+            throw $ex;
         } catch (Exception $ex) {
             $ex = new Connection\ResponseException($ex->getMessage());
             $ex->setResponse($response);
