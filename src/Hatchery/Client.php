@@ -223,4 +223,31 @@ class Client
         $payload->setHeader('Content-Type', 'application/json');
         return $this->handlePayload($payload);
     }
+
+    /**
+     * @param $actionType
+     * @return Connection\ResponseInterface
+     * @throws Connection\ResponseException
+     * @throws Connection\StrictWarningException
+     * @throws Exception
+     */
+    public function getPresets($actionType = null)
+    {
+        if ($actionType !== null) {
+            $payload = new Payload($this->baseLink . '/api/presets?actionType=' . $actionType);
+        } else {
+            $payload = new Payload($this->baseLink . '/api/presets');
+        }
+
+        try {
+            $payload->setHeader('x-auth-token', $this->getToken());
+        } catch (Exception $ex) {
+            $ex = new Connection\ResponseException('Unable to acquire login token: ' . $ex->getMessage());
+            throw $ex;
+        }
+        $payload->setMethod('get');
+        $payload->setHeader('Content-Type', 'application/json');
+        return $this->handlePayload($payload);
+    }
+
 }
