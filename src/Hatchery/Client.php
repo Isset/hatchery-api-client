@@ -250,4 +250,46 @@ class Client
         return $this->handlePayload($payload);
     }
 
+    /**
+     * @return Connection\ResponseInterface
+     * @throws Connection\ResponseException
+     * @throws Connection\StrictWarningException
+     * @throws Exception
+     */
+    public function getTemplates()
+    {
+        $payload = new Payload($this->baseLink . '/api/job_templates');
+
+        try {
+            $payload->setHeader('x-auth-token', $this->getToken());
+        } catch (Exception $ex) {
+            $ex = new Connection\ResponseException('Unable to acquire login token: ' . $ex->getMessage());
+            throw $ex;
+        }
+        $payload->setMethod('get');
+        $payload->setHeader('Content-Type', 'application/json');
+        return $this->handlePayload($payload);
+    }
+
+    /**
+     * @param $id
+     * @return Connection\ResponseInterface
+     * @throws Connection\ResponseException
+     * @throws Connection\StrictWarningException
+     * @throws Exception
+     */
+    public function getTemplate($id)
+    {
+        $payload = new Payload($this->baseLink . '/api/job_templates/' . $id);
+
+        try {
+            $payload->setHeader('x-auth-token', $this->getToken());
+        } catch (Exception $ex) {
+            $ex = new Connection\ResponseException('Unable to acquire login token: ' . $ex->getMessage());
+            throw $ex;
+        }
+        $payload->setMethod('get');
+        $payload->setHeader('Content-Type', 'application/json');
+        return $this->handlePayload($payload);
+    }
 }
