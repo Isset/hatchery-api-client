@@ -158,6 +158,8 @@ class Client
                 $ex = new Connection\StrictWarningException($data['error']);
                 $ex->setWarnings($data['warnings']);
                 throw $ex;
+            } else if ($response->getStatusCode() == 402) {
+                throw new Connection\InsufficientFundsException('Not enough credits to process request');
             } else {
                 $ex = new Connection\ResponseException(sprintf('[%s]: Unexpected response: [%s]', $response->getStatusCode(), $response->getContent()));
                 $ex->setResponse($response);
