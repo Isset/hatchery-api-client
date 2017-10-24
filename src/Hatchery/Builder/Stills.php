@@ -20,17 +20,17 @@ class Stills implements ParsableInterface
     protected $url;
 
     /**
-     * @var \Hatchery\Builder\ValueObjects\Number
+     * @var Number
      */
     protected $width;
 
     /**
-     * @var \Hatchery\Builder\ValueObjects\Number
+     * @var Number
      */
     protected $height;
 
     /**
-     * @var \Hatchery\Builder\ValueObjects\Number
+     * @var Number
      */
     protected $amount;
 
@@ -47,7 +47,7 @@ class Stills implements ParsableInterface
     /**
      * @param Url $url
      */
-    public function __construct(Url $url)
+    public function __construct(Url $url = null)
     {
         $this->url = $url;
         $this->timestamps = [];
@@ -66,7 +66,7 @@ class Stills implements ParsableInterface
     }
 
     /**
-     * @param \Hatchery\Builder\ValueObjects\Number $width
+     * @param Number $width
      */
     public function setWidth(Number $width)
     {
@@ -74,7 +74,7 @@ class Stills implements ParsableInterface
     }
 
     /**
-     * @param \Hatchery\Builder\ValueObjects\Number $height
+     * @param Number $height
      */
     public function setHeight(Number $height)
     {
@@ -82,7 +82,7 @@ class Stills implements ParsableInterface
     }
 
     /**
-     * @param \Hatchery\Builder\ValueObjects\Number $amount
+     * @param Number $amount
      * @throws JobBuilderException
      */
     public function setAmount(Number $amount)
@@ -116,24 +116,25 @@ class Stills implements ParsableInterface
     }
 
 
-
     /**
      * @return array
      */
     public function parse()
     {
         $data = [];
-        $data['base_url'] = $this->url->parseBaseUrl();
-        if ($this->url->getFilename() !== '') {
-            $data['filename'] = $this->url->getFilename();
+        if ($this->url !== null) {
+            $data['base_url'] = $this->url->parseBaseUrl();
+            if ($this->url->getFilename() !== '') {
+                $data['filename'] = $this->url->getFilename();
+            }
         }
-        if ($this->width !== null) {
+        if ($this->width instanceof Number) {
             $data['width'] = $this->width->getValue();
         }
-        if ($this->height !== null) {
+        if ($this->height instanceof Number) {
             $data['height'] = $this->height->getValue();
         }
-        if ($this->amount !== null) {
+        if ($this->amount instanceof Number) {
             $data['amount'] = $this->amount->getValue();
         }
         if ($this->format !== null) {

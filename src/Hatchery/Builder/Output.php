@@ -19,7 +19,7 @@ class Output extends Source
     protected $source;
 
     /**
-     * @var Url
+     * @var Url|null
      */
     protected $url;
 
@@ -49,17 +49,17 @@ class Output extends Source
     protected $deinterlace;
 
     /**
-     * @var \Hatchery\Builder\ValueObjects\Number
+     * @var Number
      */
     protected $width;
 
     /**
-     * @var \Hatchery\Builder\ValueObjects\Number
+     * @var Number
      */
     protected $height;
 
     /**
-     * @var \Hatchery\Builder\ValueObjects\Number
+     * @var Number
      */
     protected $outputLength;
 
@@ -73,16 +73,30 @@ class Output extends Source
      */
     protected $type;
 
+    /**
+     * @var array|null
+     */
+    protected $videoPublisherMetaData;
+    /**
+     * @var string|null
+     */
+    protected $filename;
+    /**
+     * @var string|null
+     */
+    protected $baseUrl;
 
     /**
      * @param Source $source
-     * @param Url $url
+     * @param Url|null $url
      */
-    public function __construct(Source $source, Url $url)
+    public function __construct(Source $source, Url $url = null)
     {
         parent::__construct();
         $this->source = $source;
         $this->url = $url;
+        $this->baseUrl = null;
+        $this->filename = null;
 
         $this->width = null;
         $this->height = null;
@@ -95,6 +109,7 @@ class Output extends Source
         $this->caption = null;
         $this->stills = [];
         $this->watermarks = [];
+        $this->videoPublisherMetaData = null;
     }
 
     /**
@@ -126,7 +141,7 @@ class Output extends Source
      */
     public function setFilename($filename)
     {
-        $this->url->modifyFilename($filename);
+        $this->filename = $filename;
     }
 
 
@@ -172,7 +187,7 @@ class Output extends Source
     }
 
     /**
-     * @param \Hatchery\Builder\ValueObjects\Number $width
+     * @param Number $width
      */
     public function setWidth(Number $width)
     {
@@ -180,7 +195,7 @@ class Output extends Source
     }
 
     /**
-     * @param \Hatchery\Builder\ValueObjects\Number $height
+     * @param Number $height
      */
     public function setHeight(Number $height)
     {
@@ -188,12 +203,33 @@ class Output extends Source
     }
 
     /**
-     * @param \Hatchery\Builder\ValueObjects\Number $outputLength
+     * @param Number $outputLength
      */
     public function setOutputLength(Number $outputLength)
     {
         $this->outputLength = $outputLength;
     }
+
+    /**
+     * @param string $uuid
+     * @param string $description
+     */
+    public function setVideoPublisherMetaData(string $uuid, string $description)
+    {
+        $this->videoPublisherMetaData = [
+            'video_archive_uuid' => $uuid,
+            'description' => $description,
+        ];
+    }
+
+    /**
+     * @param string $baseUrl
+     */
+    public function setBaseUrl($baseUrl)
+    {
+        $this->baseUrl = $baseUrl;
+    }
+
 
     /**
      * @return array
@@ -203,15 +239,24 @@ class Output extends Source
         $data = [];
         $data['source'] = $this->source->getReference();
         $data['reference'] = $this->reference;
-        $data['url'] = $this->url->parseUrl();
 
-        if ($this->width !== null) {
+        if ($this->url instanceof Url) {
+            if ($this->filename !== null) {
+                $this->url->modifyFilename($this->filename);
+            }
+            $data['url'] = $this->url->parseUrl();
+        } else {
+            $data['base_url'] = $this->baseUrl;
+            $data['filename'] = $this->filename;
+        }
+
+        if ($this->width instanceof Number) {
             $data['width'] = $this->width->getValue();
         }
-        if ($this->height !== null) {
+        if ($this->height instanceof Number) {
             $data['height'] = $this->height->getValue();
         }
-        if ($this->outputLength !== null) {
+        if ($this->outputLength instanceof Number) {
             $data['output_length'] = $this->outputLength->getValue();
         }
         if ($this->offset !== null) {
@@ -234,6 +279,9 @@ class Output extends Source
         }
         foreach ($this->watermarks as $watermark) {
             $data['watermarks'][] = $watermark->parse();
+        }
+        if ($this->videoPublisherMetaData !== null) {
+            $data['video_publisher_metadata'] = $this->videoPublisherMetaData;
         }
 
         return $data;
