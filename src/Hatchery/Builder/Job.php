@@ -20,6 +20,19 @@ class Job implements ParsableInterface
     protected $outputs;
 
     /**
+     * @var string|null
+     */
+    protected $callback;
+
+    /**
+     * @var string|null
+     */
+    public function setCallback($callback)
+    {
+        $this->callback = $callback;
+    }
+
+    /**
      * @param Source $source
      */
     public function add(Source $source)
@@ -30,7 +43,6 @@ class Job implements ParsableInterface
             $this->outputs[] = $source;
         }
     }
-
 
     public function parse()
     {
@@ -45,6 +57,10 @@ class Job implements ParsableInterface
 
         foreach ($this->outputs as $output) {
             $jobs['outputs'][] = $output->parse();
+        }
+
+        if ($this->callback !== null) {
+            $jobs['callback'] = $this->callback;
         }
 
         return $jobs;
