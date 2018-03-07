@@ -12,12 +12,11 @@ class Job implements ParsableInterface
     /**
      * @var Source[]
      */
-    protected $inputs;
-
+    protected $inputs = [];
     /**
      * @var Source[]
      */
-    protected $outputs;
+    protected $outputs = [];
 
     /**
      * @var string|null
@@ -75,6 +74,10 @@ class Job implements ParsableInterface
 
         if ($this->callback !== null) {
             $jobs['callback'] = $this->callback;
+        }
+
+        if ($this->strict !== null) {
+            $jobs['strict'] = $this->strict;
         }
 
         return $jobs;
