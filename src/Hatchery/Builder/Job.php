@@ -25,11 +25,25 @@ class Job implements ParsableInterface
     protected $callback;
 
     /**
+     * @var bool
+     */
+    protected $strict = true;
+
+
+    /**
      * @var string|null
      */
     public function setCallback($callback)
     {
         $this->callback = $callback;
+    }
+
+    /**
+     * @var bool
+     */
+    public function setStrict($strict)
+    {
+        $this->strict = $strict;
     }
 
     /**
