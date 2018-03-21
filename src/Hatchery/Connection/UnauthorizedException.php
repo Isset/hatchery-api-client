@@ -1,8 +1,9 @@
 <?php
+declare(strict_types=1);
 
 namespace Hatchery\Connection;
 
-class ResponseException extends HatcheryClientException
+class UnauthorizedException extends HatcheryClientException
 {
     protected $response;
 

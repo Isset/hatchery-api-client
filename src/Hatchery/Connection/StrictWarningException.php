@@ -2,14 +2,8 @@
 
 namespace Hatchery\Connection;
 
-/**
- * Class StrictWarningException
- * @package Hatchery\Connection
- * @author Bart Malestein <bart@isset.nl>
- */
-class StrictWarningException extends \Exception
+class StrictWarningException extends HatcheryClientException
 {
-
     /**
      * @var array
      */

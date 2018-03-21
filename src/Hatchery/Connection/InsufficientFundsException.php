@@ -2,7 +2,7 @@
 
 namespace Hatchery\Connection;
 
-class InsufficientFundsException extends \Exception
+class InsufficientFundsException extends HatcheryClientException
 {
 
 }

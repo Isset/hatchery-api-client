@@ -8,6 +8,11 @@ use Hatchery\Authentication\KeyPairAuthentication;
 use Hatchery\Authentication\TokenAuthentication;
 use Hatchery\Builder\Job;
 use Hatchery\Connection\ConnectionInterface;
+use Hatchery\Connection\ResponseException;
+use Hatchery\Connection\ResponseInterface;
+use Hatchery\Connection\UnauthorizedException;
+use Hatchery\Connection\InsufficientFundsException;
+use Hatchery\Connection\StrictWarningException;
 use Hatchery\Payload\JobAdd;
 use Hatchery\Payload\JobPayload;
 use Hatchery\Payload\JobStatus;
@@ -133,45 +138,42 @@ class Client
 
     /**
      * @param Payload $payload
-     * @return Connection\ResponseInterface
-     * @throws Connection\ResponseException
-     * @throws Connection\StrictWarningException
+     *
+     * @return ResponseInterface
+     *
+     * @throws UnauthorizedException
+     * @throws InsufficientFundsException
+     * @throws ResponseException
+     * @throws StrictWarningException
      * @throws Exception
      */
-    private function handlePayload(Payload $payload)
+    private function handlePayload(Payload $payload): ResponseInterface
     {
-        /* @var $response \Hatchery\Connection\ResponseInterface */
+        /* @var $response Connection\ResponseInterface */
         $response = $this->interface->sendPayload($payload);
-        try {
-            $data = json_decode($response->getContent(), true);
-
-            if ($response->getStatusCode() >= 200 && $response->getStatusCode() < 300) {
-                return $response;
-            } else if ($response->getStatusCode() == 401 || $response->getStatusCode() == 403) {
-                $this->token = false;
-
-                $ex = new Connection\ResponseException(sprintf('[%s]: Unable to process request: [%s]', $response->getStatusCode(), $response->getContent()));
-                $ex->setResponse($response);
-                throw $ex;
-            } else if ($response->getStatusCode() == 400 && isset($data['error']) && isset($data['warnings'])) {
-
-                $ex = new Connection\StrictWarningException($data['error']);
-                $ex->setWarnings($data['warnings']);
-                throw $ex;
-            } else if ($response->getStatusCode() == 402) {
-                throw new Connection\InsufficientFundsException('Not enough credits to process request');
-            } else {
-                $ex = new Connection\ResponseException(sprintf('[%s]: Unexpected response: [%s]', $response->getStatusCode(), $response->getContent()));
-                $ex->setResponse($response);
-                throw $ex;
-            }
-        } catch (Connection\StrictWarningException $ex) {
+        $data = json_decode($response->getContent(), true);
+        $statusCode = $response->getStatusCode();
+        if ($statusCode >= 200 && $statusCode < 300) {
+            return $response;
+        }
+        if ($statusCode === 400 && isset($data['error'], $data['warnings'])) {
+            $ex = new Connection\StrictWarningException($data['error']);
+            $ex->setWarnings($data['warnings']);
             throw $ex;
-        } catch (Exception $ex) {
-            $ex = new Connection\ResponseException($ex->getMessage());
+        }
+        if ($statusCode === 401 || $statusCode === 403) {
+            $this->token = false;
+            $ex = new Connection\UnauthorizedException(sprintf('[%s]: Unable to process request: [%s]', $statusCode, $response->getContent()));
             $ex->setResponse($response);
             throw $ex;
         }
+        if ($statusCode === 402) {
+            throw new Connection\InsufficientFundsException('Not enough credits to process request');
+        }
+
+        $ex = new Connection\ResponseException(sprintf('[%s]: Unexpected response: [%s]', $response->getStatusCode(), $response->getContent()));
+        $ex->setResponse($response);
+        throw $ex;
     }
 
     /**
@@ -202,7 +204,7 @@ class Client
 
                 return $response['token'];
             }
-        }else{
+        } else {
             throw new Exception('Unable to retrieve token');
         }
     }
